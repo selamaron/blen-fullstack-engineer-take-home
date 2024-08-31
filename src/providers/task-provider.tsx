@@ -1,8 +1,10 @@
 'use client';
 
+import { Toaster } from '@/components/ui/sonner';
 import { type NewTask, type Task } from '@/db/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext, useState } from 'react';
+import { toast } from 'sonner';
 
 // Define types for sort and filter options
 export type SortOption =
@@ -103,11 +105,13 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
       return { previousTasks };
     },
     onError: (err, newTask, context) => {
+      toast.error('Failed to add task. Please try again.');
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
     onSettled: () => {
+      toast.success('Task added successfully!');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
@@ -139,11 +143,13 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
       return { previousTasks };
     },
     onError: (err, { id, updatedTask }, context) => {
+      toast.error('Failed to update task. Please try again.');
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
     onSettled: () => {
+      toast.success('Task updated successfully!');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
@@ -171,11 +177,13 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
       return { previousTasks };
     },
     onError: (err, id, context) => {
+      toast.error('Failed to delete task. Please try again.');
       if (context?.previousTasks) {
         queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
     onSettled: () => {
+      toast.success('Task deleted successfully!');
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
@@ -211,6 +219,7 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
         setFilterOption,
       }}>
       {children}
+      <Toaster />
     </TaskProviderContext.Provider>
   );
 };
