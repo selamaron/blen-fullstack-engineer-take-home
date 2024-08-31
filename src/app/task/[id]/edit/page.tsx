@@ -1,18 +1,32 @@
 'use client';
 
-import { useTasks } from '@/providers/task-provider';
+import { useTasks } from '@providers/task-provider';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const AddTaskPage = () => {
-  const { addTask } = useTasks();
+const EditTaskPage = ({ params }: { params: { id: string } }) => {
+  const { tasks, updateTask } = useTasks(); // Update the useTasks to include an updateTask function
   const router = useRouter();
+  const taskId = parseInt(params.id, 10);
+
+  // Find the task to edit
+  const task = tasks.find((t) => t.id === taskId);
 
   // State to manage form inputs
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [title, setTitle] = useState(task?.title || '');
+  const [description, setDescription] = useState(task?.description || '');
+  const [dueDate, setDueDate] = useState(task?.dueDate || '');
+  const [isCompleted, setIsCompleted] = useState(task?.isCompleted || false);
+
+  // Update state when task data is available
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setDescription(task.description);
+      setDueDate(task.dueDate);
+      setIsCompleted(task.isCompleted);
+    }
+  }, [task]);
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,22 +37,25 @@ const AddTaskPage = () => {
       return;
     }
 
-    // Add the new task
-    addTask({
+    // Update the task
+    updateTask(taskId, {
       title,
       description,
       dueDate,
       isCompleted,
     });
 
-    // Redirect back to the tasks page or home page
-    router.push('/');
+    // Redirect back to the task details page
+    router.push(`/task/${taskId}`);
   };
+
+  // If the task is not found, show a message
+  if (!task) return <div>Task not found!</div>;
 
   return (
     <div className="flex h-full flex-col items-center justify-center p-4">
       <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-md">
-        <h1 className="mb-4 text-center text-2xl font-bold text-black">Add New Task</h1>
+        <h1 className="mb-4 text-center text-2xl font-bold text-black">Edit Task</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">Title</label>
@@ -84,15 +101,15 @@ const AddTaskPage = () => {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <button
-              onClick={() => router.push('/')}
-              type="reset"
-              className="w-full rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600">
+              onClick={() => router.push(`/task/${taskId}`)}
+              type="button"
+              className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600">
               Cancel
             </button>
             <button
               type="submit"
-              className="w-full rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600">
-              Create Task
+              className="rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600">
+              Update Task
             </button>
           </div>
         </form>
@@ -101,4 +118,4 @@ const AddTaskPage = () => {
   );
 };
 
-export default AddTaskPage;
+export default EditTaskPage;

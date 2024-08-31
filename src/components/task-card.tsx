@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { useTasks } from '@/providers/task-provider';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
+import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
 
 interface Props {
@@ -33,7 +34,11 @@ export const TaskCard = ({ task }: Props) => {
       <AccordionItem value="task">
         <AccordionTrigger className="w-full p-4">
           <div className="flex items-center">
-            <h3 className="text-card-foreground text-lg font-semibold">{task.title}</h3>
+            <Link href={`/task/${task.id}`}>
+              <h3 className="text-card-foreground text-lg font-semibold hover:underline">
+                {task.title} - {task.id}
+              </h3>
+            </Link>
             <span className="text-muted-foreground ml-auto text-sm">Due: {task.dueDate}</span>
             <span
               className={cn(

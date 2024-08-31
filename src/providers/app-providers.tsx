@@ -7,10 +7,10 @@ type AppProvidersProps = PropsWithChildren;
 
 export default function AppProviders({ children }: AppProvidersProps) {
   return (
-    <TaskProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-        <TanstackQueryProvider>{children}</TanstackQueryProvider>
-      </ThemeProvider>
-    </TaskProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <TanstackQueryProvider>
+        <TaskProvider>{children}</TaskProvider>
+      </TanstackQueryProvider>
+    </ThemeProvider>
   );
 }

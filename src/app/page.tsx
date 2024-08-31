@@ -3,6 +3,7 @@
 import { TaskCard } from '@/components/task-card';
 import { useTasks } from '@/providers/task-provider';
 import ChecklistIcon from '@icons/checklist-icon.svg';
+import Link from 'next/link';
 import { FaPlusCircle } from 'react-icons/fa';
 
 const Page = () => {
@@ -18,7 +19,9 @@ const Page = () => {
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="flex items-center justify-between px-2">
             <h1 className="text-2xl">Tasks</h1>
-            <FaPlusCircle className="h-6 w-6" />
+            <Link href="/add">
+              <FaPlusCircle className="h-6 w-6" />
+            </Link>
           </div>
 
           {tasks.map((task) => (
