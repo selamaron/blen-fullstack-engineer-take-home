@@ -96,10 +96,15 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel }: TaskFormPr
               )}
             />
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={onCancel} type="button">
+          <CardFooter className="flex">
+            <Button variant="outline" className="mr-auto" onClick={onCancel} type="button">
               Cancel
             </Button>
+            {mode === 'edit' && (
+              <Button variant="destructive" type="button" className="mr-2">
+                Delete Task
+              </Button>
+            )}
             <Button type="submit">{mode === 'edit' ? 'Update Task' : 'Create Task'}</Button>
           </CardFooter>
         </form>
