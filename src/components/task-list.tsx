@@ -1,14 +1,15 @@
-import { TaskCard } from '@/components/task-card'; // Import the TaskCard client component
-import { db } from '@/db/client';
-import { tasks as tasksTable } from '@/db/schema';
+'use client';
+
+import { TaskCard } from '@/components/task-card';
+import { useTasks } from '@/providers/task-provider';
 import Link from 'next/link';
 import { FaPlusCircle } from 'react-icons/fa';
 import { TaskListActionMenu } from './task-list-action-menu';
 
-// This is a server component
-export default async function TaskList() {
-  // Fetch tasks directly from the database server-side
-  const tasks = db.select().from(tasksTable).all();
+// The useTasks hook is initially populated on the server
+// So not strictly a client component, but it's functionally the same
+export const TaskList = () => {
+  const { tasks } = useTasks();
 
   return (
     <div className="flex w-full flex-1 flex-col gap-4 p-4">
@@ -20,8 +21,8 @@ export default async function TaskList() {
         </Link>
       </div>
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} /> // Render client component for each task
+        <TaskCard key={task.id} task={task} />
       ))}
     </div>
   );
-}
+};

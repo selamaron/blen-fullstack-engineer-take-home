@@ -1,4 +1,4 @@
-import TaskList from '@/components/task-list';
+import { TaskList } from '@/components/task-list';
 import ChecklistIcon from '@icons/checklist-icon.svg';
 
 export default function Page() {

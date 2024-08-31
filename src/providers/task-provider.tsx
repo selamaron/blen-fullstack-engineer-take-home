@@ -1,11 +1,10 @@
 'use client';
 
+import { type NewTask, type Task } from '@/db/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext, useState } from 'react';
 
-import { type NewTask, type Task } from '@/db/schema';
-
-interface TaskProviderValue {
+interface TaskProviderContextType {
   tasks: Task[];
   addTask: (newTask: NewTask) => void;
   updateTask: (id: number, updatedTask: Partial<NewTask>) => void;
@@ -14,7 +13,7 @@ interface TaskProviderValue {
   setOpenTasks: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-const TaskProviderContext = createContext<TaskProviderValue | undefined>(undefined);
+const TaskProviderContext = createContext<TaskProviderContextType | undefined>(undefined);
 
 export const useTasks = () => {
   const context = useContext(TaskProviderContext);
@@ -26,9 +25,10 @@ export const useTasks = () => {
 
 interface Props {
   children: React.ReactNode;
+  initialTasks?: Task[];
 }
 
-export const TaskProvider = ({ children }: Props) => {
+export const TaskProvider = ({ children, initialTasks }: Props) => {
   const queryClient = useQueryClient();
   const [openTasks, setOpenTasks] = useState<number[]>([]);
 
@@ -40,6 +40,7 @@ export const TaskProvider = ({ children }: Props) => {
       if (!res.ok) throw new Error('Failed to fetch tasks');
       return res.json();
     },
+    initialData: initialTasks,
   });
 
   // Mutation to add a new task
