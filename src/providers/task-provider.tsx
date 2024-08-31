@@ -4,6 +4,20 @@ import { type NewTask, type Task } from '@/db/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext, useState } from 'react';
 
+// Define types for sort and filter options
+export type SortOption =
+  | 'none'
+  | 'title-asc'
+  | 'title-desc'
+  | 'dueDate-asc'
+  | 'dueDate-desc'
+  | 'priority-asc'
+  | 'priority-desc'
+  | 'status-asc'
+  | 'status-desc';
+
+export type FilterOption = 'all' | 'completed' | 'pending';
+
 interface TaskProviderContextType {
   tasks: Task[];
   addTask: (newTask: NewTask) => void;
@@ -15,6 +29,10 @@ interface TaskProviderContextType {
   collapseAllTasks: () => void;
   refreshTasks: () => void;
   isFetchingTasks: boolean;
+  sortOption: SortOption;
+  setSortOption: (option: SortOption) => void;
+  filterOption: FilterOption;
+  setFilterOption: (option: FilterOption) => void;
 }
 
 const TaskProviderContext = createContext<TaskProviderContextType | undefined>(undefined);
@@ -35,6 +53,8 @@ interface Props {
 export const TaskProvider = ({ children, initialTasks }: Props) => {
   const queryClient = useQueryClient();
   const [openTasks, setOpenTasks] = useState<number[]>([]);
+  const [sortOption, setSortOption] = useState<SortOption>('none');
+  const [filterOption, setFilterOption] = useState<FilterOption>('all');
 
   const expandAllTasks = () => {
     setOpenTasks((prevOpenTasks) => [...prevOpenTasks, ...tasks.map((task) => task.id)]);
@@ -71,7 +91,23 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
       if (!res.ok) throw new Error('Failed to add task');
       return res.json();
     },
-    onSuccess: () => {
+    onMutate: async (newTask) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+
+      if (previousTasks) {
+        queryClient.setQueryData(['tasks'], [...previousTasks, { ...newTask, id: Date.now() }]);
+      }
+
+      return { previousTasks };
+    },
+    onError: (err, newTask, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
@@ -88,7 +124,26 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
       if (!res.ok) throw new Error('Failed to update task');
       return res.json();
     },
-    onSuccess: () => {
+    onMutate: async ({ id, updatedTask }) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+
+      if (previousTasks) {
+        queryClient.setQueryData(
+          ['tasks'],
+          previousTasks.map((task) => (task.id === id ? { ...task, ...updatedTask } : task))
+        );
+      }
+
+      return { previousTasks };
+    },
+    onError: (err, { id, updatedTask }, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
@@ -101,8 +156,27 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
       if (!res.ok) throw new Error('Failed to delete task');
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] }); // Refetch tasks after deletion
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+
+      if (previousTasks) {
+        queryClient.setQueryData(
+          ['tasks'],
+          previousTasks.filter((task) => task.id !== id)
+        );
+      }
+
+      return { previousTasks };
+    },
+    onError: (err, id, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
@@ -131,6 +205,10 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
         collapseAllTasks,
         refreshTasks,
         isFetchingTasks: isFetching,
+        sortOption,
+        setSortOption,
+        filterOption,
+        setFilterOption,
       }}>
       {children}
     </TaskProviderContext.Provider>

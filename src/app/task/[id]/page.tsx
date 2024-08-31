@@ -12,10 +12,12 @@ import {
 import { Badge } from '@ui/badge';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@ui/card';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { FaFlag } from 'react-icons/fa';
 
+// not strictly a client component, but useTasks loads instantly
 const TaskDetailsPage = ({ params }: { params: { id: string } }) => {
   const { tasks } = useTasks();
   const router = useRouter();
@@ -114,12 +116,12 @@ const TaskDetailsPage = ({ params }: { params: { id: string } }) => {
           <Button variant="outline" onClick={() => router.push('/')}>
             &larr;&nbsp;&nbsp;Back to Tasks
           </Button>
-          <Button
-            onClick={() => router.push(`/task/${task.id}/edit`)}
-            className="flex items-center space-x-2">
-            <Pencil1Icon className="h-4 w-4" />
-            <span>Edit Task</span>
-          </Button>
+          <Link href={`/task/${task.id}/edit`}>
+            <Button className="flex items-center space-x-2">
+              <Pencil1Icon className="h-4 w-4" />
+              <span>Edit Task</span>
+            </Button>
+          </Link>
         </CardFooter>
       </Card>
     </div>

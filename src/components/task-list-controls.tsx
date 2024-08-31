@@ -1,52 +1,15 @@
 'use client';
 
+import { FilterOption, SortOption, useTasks } from '@/providers/task-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select';
 
-export type SortOption =
-  | 'none'
-  | 'title-asc'
-  | 'title-desc'
-  | 'dueDate-asc'
-  | 'dueDate-desc'
-  | 'priority-asc'
-  | 'priority-desc'
-  | 'status-asc'
-  | 'status-desc';
+export const TaskListControls = () => {
+  const { sortOption, setSortOption, filterOption, setFilterOption } = useTasks();
 
-export type FilterOption = 'all' | 'completed' | 'pending';
-
-interface TaskListControlsProps {
-  sortOption: string;
-  setSortOption: (value: SortOption) => void;
-  filterOption: string;
-  setFilterOption: (value: FilterOption) => void;
-}
-
-export const TaskListControls = ({
-  sortOption,
-  setSortOption,
-  filterOption,
-  setFilterOption,
-}: TaskListControlsProps) => {
   return (
     <div className="mr-4 flex items-center space-x-4">
       {/* Combined Sort Dropdown */}
-      <Select
-        onValueChange={(value) =>
-          setSortOption(
-            value as
-              | 'none'
-              | 'title-asc'
-              | 'title-desc'
-              | 'dueDate-asc'
-              | 'dueDate-desc'
-              | 'priority-asc'
-              | 'priority-desc'
-              | 'status-asc'
-              | 'status-desc'
-          )
-        }
-        value={sortOption}>
+      <Select onValueChange={(value) => setSortOption(value as SortOption)} value={sortOption}>
         <SelectTrigger>
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
@@ -65,7 +28,7 @@ export const TaskListControls = ({
 
       {/* Filter Dropdown */}
       <Select
-        onValueChange={(value) => setFilterOption(value as 'all' | 'completed' | 'pending')}
+        onValueChange={(value) => setFilterOption(value as FilterOption)}
         value={filterOption}>
         <SelectTrigger>
           <SelectValue placeholder="Filter tasks" />
