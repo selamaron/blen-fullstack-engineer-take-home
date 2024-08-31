@@ -1,3 +1,4 @@
+import { Navbar } from '@/components/navbar';
 import { cn } from '@/lib/utils';
 import AppProviders from '@/providers/app-providers';
 import '@/styles/globals.css';
@@ -18,8 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className={cn(inter.className, 'h-full')}>
-        <AppProviders>{children}</AppProviders>
+      <body className={cn(inter.className, 'flex h-full flex-col')}>
+        <AppProviders>
+          <Navbar />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );
