@@ -9,12 +9,16 @@ import {
   ChevronDownIcon,
   CircleIcon,
   ClockIcon,
+  EyeOpenIcon,
+  Pencil1Icon,
 } from '@radix-ui/react-icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
 import { Badge } from '@ui/badge';
-import { Card, CardContent } from '@ui/card';
+import { Button } from '@ui/button';
+import { Card, CardContent, CardFooter } from '@ui/card';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
+import { PriorityBadge } from './priority-badge';
 
 interface Props {
   task: Task;
@@ -47,10 +51,21 @@ export const TaskCard = ({ task }: Props) => {
                   {task.title}
                 </h3>
               </Link>
+              {/* Due Date */}
+              <div className="text-muted-foreground ml-auto flex items-center space-x-1 text-sm">
+                <CalendarIcon className="h-4 w-4" />
+                <span>
+                  {new Date(task.dueDate).toLocaleDateString(undefined, {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
               {/* Status Badge */}
               <Badge
                 variant={task.isCompleted ? 'success' : 'destructive'}
-                className="ml-auto flex h-min items-center space-x-1 rounded-full px-2 py-1">
+                className="ml-6 mr-4 flex h-min items-center space-x-1 rounded-full px-2 py-1">
                 {task.isCompleted ? (
                   <>
                     <CheckCircledIcon className="h-4 w-4" /> <span>Completed</span>
@@ -61,11 +76,7 @@ export const TaskCard = ({ task }: Props) => {
                   </>
                 )}
               </Badge>
-              {/* Due Date */}
-              <div className="text-muted-foreground ml-6 flex items-center space-x-1 text-sm">
-                <CalendarIcon className="h-4 w-4" />
-                <span>{task.dueDate}</span>
-              </div>
+              <PriorityBadge priority={task.priority} short />
               {/* Expand/Collapse Icon */}
               <ChevronDownIcon
                 className={cn(
@@ -84,17 +95,45 @@ export const TaskCard = ({ task }: Props) => {
                 <div className="flex items-center space-x-1">
                   <ClockIcon className="h-4 w-4" />
                   <p>
-                    <strong>Created At:</strong> {task.createdAt}
+                    <strong>Created At:</strong>{' '}
+                    {new Date(task.createdAt).toLocaleString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    })}
                   </p>
                 </div>
                 <div className="flex items-center space-x-1">
                   <ClockIcon className="h-4 w-4" />
                   <p>
-                    <strong>Updated At:</strong> {task.updatedAt}
+                    <strong>Updated At:</strong>{' '}
+                    {new Date(task.updatedAt).toLocaleString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    })}
                   </p>
                 </div>
               </div>
             </CardContent>
+            <CardFooter className="border-muted flex justify-end gap-2 border-t p-4">
+              <Link href={`/task/${task.id}/edit`}>
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <Pencil1Icon className="h-4 w-4" />
+                  <span>Edit Task</span>
+                </Button>
+              </Link>
+              <Link href={`/task/${task.id}`}>
+                <Button variant="default" className="flex items-center space-x-2">
+                  <EyeOpenIcon className="h-4 w-4" />
+                  <span>View Task</span>
+                </Button>
+              </Link>
+            </CardFooter>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
