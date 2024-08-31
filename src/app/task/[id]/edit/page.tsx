@@ -1,8 +1,22 @@
 'use client';
 
+import { Checkbox } from '@/components/ui/checkbox';
 import { useTasks } from '@providers/task-provider';
+import { Button } from '@ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@ui/card';
+import { Input } from '@ui/input';
+import { Label } from '@ui/label';
+import { Textarea } from '@ui/textarea';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
+const EditFormSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  dueDate: z.string(),
+  isCompleted: z.boolean(),
+});
 
 const EditTaskPage = ({ params }: { params: { id: string } }) => {
   const { tasks, updateTask } = useTasks(); // Update the useTasks to include an updateTask function
@@ -54,66 +68,63 @@ const EditTaskPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="flex h-full flex-col items-center justify-center p-4">
-      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-md">
-        <h1 className="mb-4 text-center text-2xl font-bold text-black">Edit Task</h1>
+      <Card className="w-full max-w-lg">
+        <CardHeader>
+          <CardTitle>Edit Task</CardTitle>
+        </CardHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border p-2 focus:outline-none focus:ring focus:ring-blue-200"
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border p-2 focus:outline-none focus:ring focus:ring-blue-200"
-              rows={3}
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Due Date</label>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border p-2 focus:outline-none focus:ring focus:ring-blue-200"
-              required
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={isCompleted}
-              onChange={(e) => setIsCompleted(e.target.checked)}
-              id="completed-checkbox"
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <label htmlFor="completed-checkbox" className="text-sm text-gray-700">
-              Mark as Completed
-            </label>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => router.push(`/task/${taskId}`)}
-              type="button"
-              className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600">
+          <CardContent className="flex flex-col gap-4">
+            <div>
+              <Label className="mb-2 block text-sm font-medium">Title</Label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
+            </div>
+            <div>
+              <Label className="mb-2 block text-sm font-medium">Description</Label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                required
+              />
+            </div>
+            <div>
+              <Label className="mb-2 block text-sm font-medium">Due Date</Label>
+              <Input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="w-full rounded-lg border p-2 focus:outline-none focus:ring focus:ring-blue-200"
+                required
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              {/* <Input
+                type="checkbox"
+                checked={isCompleted}
+                onChange={(e) => setIsCompleted(e.target.checked)}
+                id="completed-checkbox"
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              /> */}
+              <Checkbox
+                checked={isCompleted}
+                onCheckedChange={(checked) =>
+                  setIsCompleted(checked === 'indeterminate' ? false : checked)
+                }
+                id="completed-checkbox"
+              />
+              <Label htmlFor="completed-checkbox" className="text-sm">
+                Mark as Completed
+              </Label>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={() => router.push(`/task/${taskId}`)} type="button">
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600">
-              Update Task
-            </button>
-          </div>
+            </Button>
+            <Button type="submit">Update Task</Button>
+          </CardFooter>
         </form>
-      </div>
+      </Card>
     </div>
   );
 };

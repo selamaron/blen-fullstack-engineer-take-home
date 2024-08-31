@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { useTasks } from '@/providers/task-provider';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ui/accordion';
+import { Badge } from '@ui/badge';
 import { Card } from '@ui/card';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
@@ -41,14 +42,9 @@ export const TaskCard = ({ task }: Props) => {
                 </h3>
               </Link>
               <span className="text-muted-foreground ml-auto text-sm">Due: {task.dueDate}</span>
-              <span
-                className={cn(
-                  'ml-2 rounded-lg px-2 py-1 text-sm font-medium',
-                  task.isCompleted ? 'bg-green-200 text-green-800' : 'bg-red-500 text-red-200'
-                )}>
+              <Badge variant={task.isCompleted ? 'success' : 'destructive'} className="ml-2 h-min">
                 {task.isCompleted ? 'Completed' : 'Pending'}
-              </span>
-
+              </Badge>
               <ChevronDownIcon
                 className={cn(
                   'text-muted-foreground ml-2 h-4 w-4 shrink-0 transition-transform duration-200',
