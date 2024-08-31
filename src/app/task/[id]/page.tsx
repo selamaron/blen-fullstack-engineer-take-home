@@ -73,7 +73,7 @@ const TaskDetailsPage = ({ params }: { params: { id: string } }) => {
             </p>
           </div>
           {/* Task Priority */}
-          <div className="text-muted-foreground mb-4 flex items-center">
+          <div className="text-muted-foreground mb-6 flex items-center">
             <FaFlag className="mr-2 h-5 w-5" />
             <p className="mr-2 text-base">Priority:</p>
             <PriorityBadge priority={task.priority} />

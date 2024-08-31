@@ -8,11 +8,13 @@ interface TaskProviderContextType {
   tasks: Task[];
   addTask: (newTask: NewTask) => void;
   updateTask: (id: number, updatedTask: Partial<NewTask>) => void;
-  deleteTask: (id: number) => void; // Add deleteTask to the interface
+  deleteTask: (id: number) => void;
   openTasks: number[];
   setOpenTasks: React.Dispatch<React.SetStateAction<number[]>>;
   expandAllTasks: () => void;
   collapseAllTasks: () => void;
+  refreshTasks: () => void;
+  isFetchingTasks: boolean;
 }
 
 const TaskProviderContext = createContext<TaskProviderContextType | undefined>(undefined);
@@ -43,7 +45,7 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
   };
 
   // Fetch tasks using TanStack Query
-  const { data: tasks = [] } = useQuery<Task[]>({
+  const { data: tasks = [], isFetching } = useQuery<Task[]>({
     queryKey: ['tasks'],
     queryFn: async () => {
       const res = await fetch('/api/tasks');
@@ -52,6 +54,10 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
     },
     initialData: initialTasks,
   });
+
+  const refreshTasks = () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+  };
 
   const addTaskMutation = useMutation({
     mutationFn: async (newTask: NewTask) => {
@@ -123,6 +129,8 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
         setOpenTasks,
         expandAllTasks,
         collapseAllTasks,
+        refreshTasks,
+        isFetchingTasks: isFetching,
       }}>
       {children}
     </TaskProviderContext.Provider>

@@ -44,7 +44,7 @@ export const TaskCard = ({ task }: Props) => {
         type="single"
         collapsible>
         <AccordionItem value="task">
-          <AccordionTrigger className="hover:bg-muted w-full p-4 transition-colors duration-200">
+          <AccordionTrigger className="hover:bg-accent w-full p-4 transition-colors duration-200">
             <div className="flex items-center">
               <Link href={`/task/${task.id}`}>
                 <h3 className="text-card-foreground text-lg font-semibold hover:underline">
@@ -87,9 +87,9 @@ export const TaskCard = ({ task }: Props) => {
             </div>
           </AccordionTrigger>
           <AccordionContent className={cn('border-muted border-t')}>
-            <CardContent className="pt-4">
+            <CardContent className="pt-6">
               <div className="mb-4">
-                <p className="text-card-foreground mb-2 text-sm">{task.description}</p>
+                <p className="text-card-foreground text-sm">{task.description}</p>
               </div>
               <div className="text-muted-foreground grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center space-x-1">

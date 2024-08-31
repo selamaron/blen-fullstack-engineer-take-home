@@ -5,6 +5,7 @@ import { useTasks } from '@/providers/task-provider';
 import Link from 'next/link';
 import { useState } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
+import { RefreshButton } from './refresh-button';
 import { TaskListActionMenu } from './task-list-action-menu';
 import { FilterOption, SortOption, TaskListControls } from './task-list-controls';
 
@@ -46,7 +47,8 @@ export const TaskList = () => {
   return (
     <div className="flex w-full flex-1 flex-col gap-4 p-4">
       <div className="flex items-center px-2">
-        <h1 className="mr-auto text-2xl">Tasks</h1>
+        <h1 className="mr-2 text-2xl">Tasks</h1>
+        <RefreshButton className="mr-auto" />
         {/* TaskListControls Component */}
         <TaskListControls
           sortOption={sortOption}
