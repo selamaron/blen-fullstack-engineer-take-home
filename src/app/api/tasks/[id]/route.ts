@@ -44,3 +44,24 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({ error: 'Failed to update task' }, { status: 500 });
   }
 }
+
+// DELETE: Delete a task by ID
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const taskId = parseInt(params.id, 10);
+
+    // Check if the task exists
+    const existingTask = db.select().from(tasksTable).where(eq(tasksTable.id, taskId)).get();
+    if (!existingTask) {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    }
+
+    // Correct syntax for deleting a task in Drizzle ORM with BetterSQLite3
+    db.delete(tasksTable).where(eq(tasksTable.id, taskId)).run();
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    return NextResponse.json({ error: 'Failed to delete task' }, { status: 500 });
+  }
+}

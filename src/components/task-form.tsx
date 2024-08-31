@@ -1,25 +1,39 @@
 'use client';
 
+import { useTasks } from '@/providers/task-provider';
 import { EditFormSchema } from '@/schema/form-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@ui/alert-dialog';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@ui/card';
 import { Checkbox } from '@ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@ui/form';
 import { Input } from '@ui/input';
 import { Textarea } from '@ui/textarea';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 // Reusable form component for both create and edit tasks
 type TaskFormProps = {
-  initialValues?: z.infer<typeof EditFormSchema>; // Initial values for form
-  onSubmit: (data: z.infer<typeof EditFormSchema>) => void; // Submit handler
-  mode: 'create' | 'edit'; // Form mode - either create or edit
-  onCancel: () => void; // Cancel handler
+  initialValues?: z.infer<typeof EditFormSchema>;
+  onSubmit: (data: z.infer<typeof EditFormSchema>) => void;
+  mode: 'create' | 'edit';
+  onCancel: () => void;
+  taskId?: number;
 };
 
-export function TaskForm({ initialValues, onSubmit, mode, onCancel }: TaskFormProps) {
+export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: TaskFormProps) {
   const form = useForm<z.infer<typeof EditFormSchema>>({
     resolver: zodResolver(EditFormSchema),
     defaultValues: initialValues || {
@@ -29,6 +43,9 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel }: TaskFormPr
       isCompleted: false,
     },
   });
+
+  const { deleteTask } = useTasks();
+  const router = useRouter();
 
   return (
     <Card className="w-full max-w-lg">
@@ -100,10 +117,30 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel }: TaskFormPr
             <Button variant="outline" className="mr-auto" onClick={onCancel} type="button">
               Cancel
             </Button>
-            {mode === 'edit' && (
-              <Button variant="destructive" type="button" className="mr-2">
-                Delete Task
-              </Button>
+            {mode === 'edit' && taskId && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" type="button" className="mr-2">
+                    Delete Task
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>This action cannot be undone!</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        deleteTask(taskId);
+                        router.push('/');
+                      }}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
             <Button type="submit">{mode === 'edit' ? 'Update Task' : 'Create Task'}</Button>
           </CardFooter>

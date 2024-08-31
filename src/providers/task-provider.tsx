@@ -8,7 +8,8 @@ import { type NewTask, type Task } from '@/db/schema';
 interface TaskProviderValue {
   tasks: Task[];
   addTask: (newTask: NewTask) => void;
-  updateTask: (id: number, updatedTask: Partial<NewTask>) => void; // Add updateTask to the interface
+  updateTask: (id: number, updatedTask: Partial<NewTask>) => void;
+  deleteTask: (id: number) => void; // Add deleteTask to the interface
   openTasks: number[];
   setOpenTasks: React.Dispatch<React.SetStateAction<number[]>>;
 }
@@ -55,7 +56,7 @@ export const TaskProvider = ({ children }: Props) => {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] }); // Refetch tasks after adding a new one
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
@@ -73,7 +74,21 @@ export const TaskProvider = ({ children }: Props) => {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] }); // Refetch tasks after updating
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+
+  // Mutation to delete an existing task
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete task');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] }); // Refetch tasks after deletion
     },
   });
 
@@ -87,8 +102,14 @@ export const TaskProvider = ({ children }: Props) => {
     updateTaskMutation.mutate({ id, updatedTask });
   };
 
+  // Function to delete a task
+  const deleteTask = (id: number) => {
+    deleteTaskMutation.mutate(id);
+  };
+
   return (
-    <TaskProviderContext.Provider value={{ tasks, addTask, updateTask, openTasks, setOpenTasks }}>
+    <TaskProviderContext.Provider
+      value={{ tasks, addTask, updateTask, deleteTask, openTasks, setOpenTasks }}>
       {children}
     </TaskProviderContext.Provider>
   );

@@ -25,6 +25,7 @@ const EditTaskPage = ({ params }: { params: { id: string } }) => {
   return (
     <div className="flex h-full flex-col items-center justify-center p-4">
       <TaskForm
+        taskId={taskId}
         initialValues={{
           title: task.title,
           description: task.description,
