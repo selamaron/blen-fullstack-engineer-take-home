@@ -1,4 +1,3 @@
-// /db/tasks.ts
 import { db } from './client';
 import { tasks as tasksTable, type NewTask, type Task } from './schema';
 

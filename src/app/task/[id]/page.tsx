@@ -1,6 +1,6 @@
 'use client';
 
-import { PriorityBadge } from '@/components/priority-badge'; // Import the new PriorityBadge component
+import { PriorityBadge } from '@/components/priority-badge';
 import { useTasks } from '@/providers/task-provider';
 import {
   CalendarIcon,
