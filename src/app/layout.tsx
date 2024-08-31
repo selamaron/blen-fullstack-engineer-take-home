@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className={cn(inter.className, 'flex h-full flex-col')}>
+    <html lang="en" className="flex min-h-full flex-col" suppressHydrationWarning>
+      <body className={cn(inter.className, 'flex flex-1 flex-col')}>
         <AppProviders>
           <Navbar />
           {children}

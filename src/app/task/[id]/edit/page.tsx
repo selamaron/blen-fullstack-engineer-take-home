@@ -37,7 +37,7 @@ const EditTaskPage = ({ params }: { params: { id: string } }) => {
   };
 
   return (
-    <div className="flex h-full flex-col items-center justify-center p-4">
+    <div className="flex flex-1 flex-col items-center justify-center p-4">
       <TaskForm
         taskId={taskId}
         initialValues={initialValues} // Pass string-based initial values for form

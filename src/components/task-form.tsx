@@ -1,8 +1,10 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { useTasks } from '@/providers/task-provider';
 import { TaskFormSchema } from '@/schema/form-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CalendarIcon } from '@radix-ui/react-icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,13 +17,17 @@ import {
   AlertDialogTrigger,
 } from '@ui/alert-dialog';
 import { Button } from '@ui/button';
+import { Calendar } from '@ui/calendar';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@ui/card';
 import { Checkbox } from '@ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@ui/form';
 import { Input } from '@ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select';
 import { Textarea } from '@ui/textarea';
+import { format, parseISO } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -48,6 +54,8 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: Ta
 
   const { deleteTask } = useTasks();
   const router = useRouter();
+
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false); // State to close date picker on date selection
 
   return (
     <Card className="w-full max-w-lg">
@@ -94,11 +102,40 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: Ta
               control={form.control}
               name="dueDate"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input placeholder="When is this due?" type="date" {...field} />
-                  </FormControl>
+                <FormItem className="flex flex-col">
+                  <FormLabel className="mr-auto">Due Date</FormLabel>
+                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    {' '}
+                    {/* Manage popover state */}
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'hover:border-input pl-3 text-left font-normal hover:bg-transparent',
+                            !field.value && 'text-muted-foreground'
+                          )}>
+                          {field.value ? (
+                            format(parseISO(field.value), 'PPP')
+                          ) : (
+                            <span>When is this due?</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? parseISO(field.value) : undefined}
+                        onSelect={(date) => {
+                          field.onChange(date ? date.toISOString() : '');
+                          setIsPopoverOpen(false); // Close popover after date selection
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

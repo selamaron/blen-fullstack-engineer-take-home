@@ -53,7 +53,6 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
     initialData: initialTasks,
   });
 
-  // Mutation to add a new task
   const addTaskMutation = useMutation({
     mutationFn: async (newTask: NewTask) => {
       const res = await fetch('/api/tasks', {
@@ -71,7 +70,6 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
     },
   });
 
-  // Mutation to update an existing task
   const updateTaskMutation = useMutation({
     mutationFn: async ({ id, updatedTask }: { id: number; updatedTask: Partial<NewTask> }) => {
       const res = await fetch(`/api/tasks/${id}`, {
@@ -89,7 +87,6 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
     },
   });
 
-  // Mutation to delete an existing task
   const deleteTaskMutation = useMutation({
     mutationFn: async (id: number) => {
       const res = await fetch(`/api/tasks/${id}`, {
@@ -103,17 +100,14 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
     },
   });
 
-  // Function to add a new task
   const addTask = (newTask: NewTask) => {
     addTaskMutation.mutate(newTask);
   };
 
-  // Function to update a task
   const updateTask = (id: number, updatedTask: Partial<NewTask>) => {
     updateTaskMutation.mutate({ id, updatedTask });
   };
 
-  // Function to delete a task
   const deleteTask = (id: number) => {
     deleteTaskMutation.mutate(id);
   };
