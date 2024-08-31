@@ -1,7 +1,7 @@
 'use client';
 
 import { useTasks } from '@/providers/task-provider';
-import { EditFormSchema } from '@/schema/form-schema';
+import { TaskFormSchema } from '@/schema/form-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AlertDialog,
@@ -19,6 +19,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@ui/card';
 import { Checkbox } from '@ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@ui/form';
 import { Input } from '@ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ui/select';
 import { Textarea } from '@ui/textarea';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -26,21 +27,22 @@ import { z } from 'zod';
 
 // Reusable form component for both create and edit tasks
 type TaskFormProps = {
-  initialValues?: z.infer<typeof EditFormSchema>;
-  onSubmit: (data: z.infer<typeof EditFormSchema>) => void;
+  initialValues?: z.infer<typeof TaskFormSchema>;
+  onSubmit: (data: z.infer<typeof TaskFormSchema>) => void;
   mode: 'create' | 'edit';
   onCancel: () => void;
   taskId?: number;
 };
 
 export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: TaskFormProps) {
-  const form = useForm<z.infer<typeof EditFormSchema>>({
-    resolver: zodResolver(EditFormSchema),
+  const form = useForm<z.infer<typeof TaskFormSchema>>({
+    resolver: zodResolver(TaskFormSchema),
     defaultValues: initialValues || {
       title: '',
       description: '',
       dueDate: '',
       isCompleted: false,
+      priority: '2', // Default to Medium priority
     },
   });
 
@@ -55,6 +57,7 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: Ta
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <CardContent className="flex flex-col gap-4">
+            {/* Title Field */}
             <FormField
               control={form.control}
               name="title"
@@ -68,6 +71,7 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: Ta
                 </FormItem>
               )}
             />
+            {/* Description Field */}
             <FormField
               control={form.control}
               name="description"
@@ -85,6 +89,7 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: Ta
                 </FormItem>
               )}
             />
+            {/* Due Date Field */}
             <FormField
               control={form.control}
               name="dueDate"
@@ -98,6 +103,30 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: Ta
                 </FormItem>
               )}
             />
+            {/* Priority Field */}
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Priority</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select priority level" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="1">Low (1)</SelectItem>
+                      <SelectItem value="2">Medium (2)</SelectItem>
+                      <SelectItem value="3">High (3)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Is Completed Checkbox */}
             <FormField
               control={form.control}
               name="isCompleted"
@@ -113,6 +142,7 @@ export function TaskForm({ initialValues, onSubmit, mode, onCancel, taskId }: Ta
               )}
             />
           </CardContent>
+          {/* Form Footer */}
           <CardFooter className="flex">
             <Button variant="outline" className="mr-auto" onClick={onCancel} type="button">
               Cancel
