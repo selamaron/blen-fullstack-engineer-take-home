@@ -11,6 +11,8 @@ interface TaskProviderContextType {
   deleteTask: (id: number) => void; // Add deleteTask to the interface
   openTasks: number[];
   setOpenTasks: React.Dispatch<React.SetStateAction<number[]>>;
+  expandAllTasks: () => void;
+  collapseAllTasks: () => void;
 }
 
 const TaskProviderContext = createContext<TaskProviderContextType | undefined>(undefined);
@@ -31,6 +33,14 @@ interface Props {
 export const TaskProvider = ({ children, initialTasks }: Props) => {
   const queryClient = useQueryClient();
   const [openTasks, setOpenTasks] = useState<number[]>([]);
+
+  const expandAllTasks = () => {
+    setOpenTasks((prevOpenTasks) => [...prevOpenTasks, ...tasks.map((task) => task.id)]);
+  };
+
+  const collapseAllTasks = () => {
+    setOpenTasks([]);
+  };
 
   // Fetch tasks using TanStack Query
   const { data: tasks = [] } = useQuery<Task[]>({
@@ -117,6 +127,8 @@ export const TaskProvider = ({ children, initialTasks }: Props) => {
         deleteTask,
         openTasks,
         setOpenTasks,
+        expandAllTasks,
+        collapseAllTasks,
       }}>
       {children}
     </TaskProviderContext.Provider>

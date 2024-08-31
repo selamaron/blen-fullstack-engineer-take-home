@@ -38,7 +38,7 @@ export const TaskCard = ({ task }: Props) => {
             <div className="flex items-center">
               <Link href={`/task/${task.id}`}>
                 <h3 className="text-card-foreground text-lg font-semibold hover:underline">
-                  {task.title} - {task.id}
+                  {task.title}
                 </h3>
               </Link>
               <span className="text-muted-foreground ml-auto text-sm">Due: {task.dueDate}</span>
